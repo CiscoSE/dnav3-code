@@ -44,12 +44,10 @@ project_root = os.path.abspath(os.path.join(here, "../.."))
 
 # Extend the system path to include the project root and import the env files
 sys.path.insert(0, project_root)
-import env_lab  # noqa
-import env_user  # noqa
 
 
 # Create a Cisco Spark object
-spark = ciscosparkapi.CiscoSparkAPI(access_token=env_user.SPARK_ACCESS_TOKEN)
+spark = ciscosparkapi.CiscoSparkAPI(access_token="TOKEN")
 
 
 class c_organizationdata:
@@ -109,7 +107,7 @@ def getorglist(p_apikey):
     try:
         # MISSION TODO
         r = requests.get(
-            "MISSION: REPLACE WITH ORGANIZATIONS API CALL",
+            "", # fill-in the right API
             headers={
                 "X-Cisco-Meraki-API-Key": p_apikey,
                 "Content-Type": "application/json"
@@ -131,36 +129,6 @@ def getorglist(p_apikey):
     return (rjson)
 
 
-def getorgid(p_apikey, p_orgname):
-    # looks up org id for a specific org name
-    # on failure returns 'null'
-
-    time.sleep(API_EXEC_DELAY)
-    try:
-        # MISSION TODO
-        r = requests.get(
-            "MISSION: REPLACE WITH ORGANIZATIONS API CALL",
-            headers={
-                "X-Cisco-Meraki-API-Key": p_apikey,
-                "Content-Type": "application/json"
-            }
-        )
-    # END MISSION SECTION
-    except Exception as e:
-        printusertext("ERROR 02: Unable to contact Meraki cloud")
-        sys.exit(2)
-
-    if r.status_code != requests.codes.ok:
-        return "null"
-
-    rjson = r.json()
-
-    for record in rjson:
-        if record["name"] == p_orgname:
-            return record["id"]
-
-    return ("null")
-
 
 def getnwlist(p_apikey, p_orgid):
     # returns a list of all networks in an organization
@@ -170,8 +138,7 @@ def getnwlist(p_apikey, p_orgid):
     try:
         # MISSION TODO
         r = requests.get(
-            "MISSION: REPLACE WITH NETWORKS API CALL (in place of \
-            Organization ID put %s)"
+            "" # fill-in the right API
             % (p_orgid),
             headers={
                 "X-Cisco-Meraki-API-Key": p_apikey,
@@ -199,8 +166,7 @@ def readmxfwruleset(p_apikey, p_nwid):
     try:
         # MISSION TODO
         r = requests.get(
-            "MISSION: REPLACE WITH firewallrules API CALL (in place of \
-            network ID put %s)"
+            "" # fill-in the right API
             % (p_nwid),
             headers={
                 "X-Cisco-Meraki-API-Key": p_apikey,
@@ -214,6 +180,7 @@ def readmxfwruleset(p_apikey, p_nwid):
 
     returnvalue = []
     if r.status_code != requests.codes.ok:
+        print(p_apikey,p_nwid)
         returnvalue.append({"srcPort": "null"})
         return returnvalue
 
@@ -371,7 +338,7 @@ def cmdcreatebackup(p_apikey, p_orglist):
                     )
 
                     spark.messages.create(
-                        env_user.SPARK_ROOM_ID,
+                        "ROOMID", # fill-in the right Webex Teams ROOMID
                         files=[filepath],
                         text="MISSION: L3 Rules Backup - Meraki - I have \
                         completed the mission!",
@@ -453,6 +420,7 @@ def main(argv):
     try:
         opts, args = getopt.getopt(argv, "hk:o:f:c:")
     except getopt.GetoptError:
+        #print("stuck here")
         printhelp()
         sys.exit(2)
 
@@ -468,7 +436,7 @@ def main(argv):
             arg_command = arg
 
     # check if all parameters are required parameters have been given
-    if arg_apikey == "" or arg_org == "":
+    if arg_apikey == "":
         printhelp()
         sys.exit(2)
 
